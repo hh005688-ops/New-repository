@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M7 戰略終端 v10.3 | Than陸仁 監製</title>
+    <title>M7 戰略終端 v10.4 | Than陸仁 監製</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -15,7 +15,6 @@
         #settings-drawer { z-index: 1000; transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
         .yt-link { animation: glow 2s infinite; }
         @keyframes glow { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; color: #10B981; } }
-        /* Logo 旋轉特效：滑過時會有低調的旋轉感 */
         .logo-glow { transition: transform 0.5s; }
         .logo-glow:hover { transform: rotate(10deg) scale(1.1); filter: drop-shadow(0 0 8px rgba(16,185,129,0.5)); }
     </style>
@@ -40,7 +39,7 @@
             <div class="flex items-center gap-3">
                 <select id="ui-acc-switcher" onchange="switchAccount(this.value)" class="bg-white/5 border border-white/10 p-3 rounded-2xl text-sm font-bold outline-none"></select>
                 <div class="flex gap-2">
-                    <button onclick="document.body.classList.toggle('privacy-on')" class="w-11 h-11 m7-card flex items-center justify-center">👁️</button>
+                    <button onclick="document.body.classList.toggle('privacy-on')" class="w-11 h-11 m7-card flex items-center justify-center text-xl">👁️</button>
                     <button onclick="toggleSettings()" class="w-11 h-11 m7-card border-emerald-500/50 border flex items-center justify-center text-xl">⚙️</button>
                 </div>
             </div>
@@ -49,14 +48,14 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="m7-card p-10 md:col-span-2 text-center relative overflow-hidden">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 italic">Core Maintenance Ratio</p>
-                <div id="ui-ratio" class="text-9xl font-black tracking-tighter text-emerald-400 privacy-mask">--%</div>
+                <div id="ui-ratio" class="text-9xl font-black tracking-tighter text-emerald-400 privacy-mask">0%</div>
                 <div class="w-full mt-10 h-2 bg-white/5 rounded-full overflow-hidden">
                     <div id="ui-survival-bar" class="h-full bg-gradient-to-r from-rose-500 to-emerald-500 transition-all duration-1000" style="width: 0%"></div>
                 </div>
             </div>
             <div class="m7-card p-8 flex flex-col items-center justify-center">
                 <canvas id="weightChart" class="max-w-[180px]"></canvas>
-                <div id="ui-total-assets" class="mt-6 text-xl font-black privacy-mask text-emerald-400">NT$ --</div>
+                <div id="ui-total-assets" class="mt-6 text-xl font-black privacy-mask text-emerald-400">NT$ 0</div>
                 <p class="text-[10px] text-gray-600 uppercase font-bold tracking-widest">Total Asset Market Value</p>
             </div>
         </div>
@@ -71,7 +70,9 @@
                         <thead class="text-gray-600 text-[10px] uppercase border-b border-white/5">
                             <tr><th class="pb-4">標的</th><th class="pb-4 text-right">目標%</th><th class="pb-4 text-right">操作 (NT$)</th></tr>
                         </thead>
-                        <tbody id="ui-asset-table" class="divide-y divide-white/5"></tbody>
+                        <tbody id="ui-asset-table" class="divide-y divide-white/5">
+                            <tr><td colspan="3" class="py-10 text-center text-gray-500 italic">請點擊右上方 ⚙️ 開始建立配置</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -79,7 +80,11 @@
                 <h3 class="text-xs font-bold text-gray-400 mb-6 uppercase tracking-widest italic flex items-center gap-2">
                     <span class="w-1 h-4 bg-rose-500 rounded-full"></span> 壓力測試：極端崩盤模擬
                 </h3>
-                <div id="ui-stress-grid" class="grid grid-cols-3 gap-4"></div>
+                <div id="ui-stress-grid" class="grid grid-cols-3 gap-4">
+                    <div class="bg-white/5 p-4 rounded-2xl text-center border border-white/5 opacity-50"><p class="text-[9px] text-gray-500 font-bold mb-1">-10%</p><p class="text-lg font-black italic">--%</p></div>
+                    <div class="bg-white/5 p-4 rounded-2xl text-center border border-white/5 opacity-50"><p class="text-[9px] text-gray-500 font-bold mb-1">-20%</p><p class="text-lg font-black italic">--%</p></div>
+                    <div class="bg-white/5 p-4 rounded-2xl text-center border border-white/5 opacity-50"><p class="text-[9px] text-gray-500 font-bold mb-1">-30%</p><p class="text-lg font-black italic">--%</p></div>
+                </div>
             </div>
         </div>
 
@@ -93,57 +98,65 @@
 
     <div id="settings-drawer" class="fixed top-0 right-0 h-full w-full md:w-[500px] bg-slate-900 p-8 shadow-2xl border-l border-white/10 translate-x-full overflow-y-auto">
         <div class="flex justify-between items-center mb-10 text-white">
-            <h3 class="text-2xl font-black italic">戰略配置中心</h3>
+            <h3 class="text-2xl font-black italic tracking-tighter uppercase">Strategic Setup</h3>
             <button onclick="toggleSettings()" class="text-3xl">✕</button>
         </div>
         <div class="space-y-6">
             <div class="flex gap-2">
-                <button onclick="addAccount()" class="flex-1 py-3 bg-emerald-500/10 text-emerald-400 rounded-xl font-bold text-xs uppercase">+ NEW ACC</button>
-                <button onclick="deleteAccount()" class="px-4 py-3 bg-rose-500/10 text-rose-400 rounded-xl font-bold text-xs uppercase">DEL</button>
+                <button onclick="addAccount()" class="flex-1 py-3 bg-emerald-500/10 text-emerald-400 rounded-xl font-bold text-[10px] uppercase tracking-widest">+ ADD ACCOUNT</button>
+                <button onclick="deleteAccount()" class="px-4 py-3 bg-rose-500/10 text-rose-400 rounded-xl font-bold text-[10px] uppercase tracking-widest">DEL</button>
             </div>
             <div class="bg-white/5 p-6 rounded-3xl space-y-4">
-                <div><label class="text-[10px] text-gray-500 font-bold block mb-1 uppercase">帳號名稱</label><input id="cfg-acc-name" class="bg-slate-800 w-full p-3 rounded-xl text-sm font-bold outline-none border border-white/5"></div>
-                <div><label class="text-[10px] text-gray-500 font-bold block mb-1 uppercase">總負債 (NT$)</label><input type="number" id="cfg-debt" class="bg-slate-800 w-full p-3 rounded-xl text-xl font-black text-rose-400 outline-none border border-white/5"></div>
+                <div><label class="text-[9px] text-gray-500 font-bold block mb-1 uppercase tracking-widest">Account Name</label><input id="cfg-acc-name" class="bg-slate-800 w-full p-3 rounded-xl text-sm font-bold outline-none border border-white/5" placeholder="例如：質押核心戶"></div>
+                <div><label class="text-[9px] text-gray-500 font-bold block mb-1 uppercase tracking-widest">Pledge Debt (NT$)</label><input type="number" id="cfg-debt" class="bg-slate-800 w-full p-3 rounded-xl text-xl font-black text-rose-400 outline-none border border-white/5" placeholder="0"></div>
             </div>
             <div class="space-y-4">
-                <div class="flex justify-between items-center"><label class="text-xs text-gray-500 font-bold uppercase italic tracking-widest">ASSETS LIST</label><button onclick="addAssetRow()" class="text-[10px] px-4 py-2 bg-emerald-500 text-white rounded-full font-black uppercase">+ ADD</button></div>
+                <div class="flex justify-between items-center"><label class="text-xs text-gray-500 font-bold uppercase italic tracking-widest">Assets List</label><button onclick="addAssetRow()" class="text-[10px] px-4 py-2 bg-emerald-500 text-white rounded-full font-black uppercase shadow-lg shadow-emerald-500/20">+ ADD ASSET</button></div>
                 <div id="cfg-asset-rows" class="space-y-3"></div>
             </div>
-            <button onclick="saveAndRun()" class="w-full py-5 bg-emerald-500 text-white font-black rounded-2xl shadow-xl active:scale-95 transition-all mt-8">更新數據並儲存至瀏覽器</button>
+            <button onclick="saveAndRun()" class="w-full py-5 bg-emerald-500 text-white font-black rounded-2xl shadow-xl active:scale-95 transition-all mt-8">INITIALIZE & SYNC</button>
         </div>
     </div>
 
     <script>
+        // 🎯 初始數據改為空白結構
         let DATA = JSON.parse(localStorage.getItem('than_m7_v10')) || {
             activeIndex: 0,
-            accounts: [{ name: '核心質押戶', debt: 560000, assets: [{code: '00675L', val: 956400, target: 70}, {code: '00926', val: 235200, target: 30}] }]
+            accounts: [{ name: '我的質押帳號', debt: 0, assets: [] }]
         };
         let myChart;
 
         function toggleSettings() { document.getElementById('settings-drawer').classList.toggle('translate-x-full'); loadSettings(); }
         function loadSettings() {
             const acc = DATA.accounts[DATA.activeIndex];
-            document.getElementById('cfg-acc-name').value = acc.name;
-            document.getElementById('cfg-debt').value = acc.debt;
+            document.getElementById('cfg-acc-name').value = acc.name || '';
+            document.getElementById('cfg-debt').value = acc.debt || '';
             const container = document.getElementById('cfg-asset-rows');
             container.innerHTML = '';
-            acc.assets.forEach(a => addAssetRow(a.code, a.val, a.target));
+            if (acc.assets) acc.assets.forEach(a => addAssetRow(a.code, a.val, a.target));
         }
 
         function addAssetRow(code='', val='', target='') {
             const div = document.createElement('div');
             div.className = "bg-white/5 p-4 rounded-2xl flex flex-wrap gap-2 items-center border border-white/5";
             div.innerHTML = `
-                <input type="text" placeholder="代號" class="w-[30%] bg-slate-800 p-2 rounded-lg text-xs cfg-a-code font-bold outline-none" value="${code}">
-                <input type="number" placeholder="市值" class="w-[40%] bg-slate-800 p-2 rounded-lg text-xs cfg-a-val font-bold outline-none" value="${val}">
-                <input type="number" placeholder="%" class="w-[20%] bg-slate-800 p-2 rounded-lg text-xs cfg-a-target font-bold outline-none" value="${target}">
-                <button onclick="this.parentElement.remove()" class="text-rose-500 font-bold ml-auto">✕</button>
+                <input type="text" placeholder="標的代號" class="w-[30%] bg-slate-800 p-2 rounded-lg text-xs cfg-a-code font-bold outline-none" value="${code}">
+                <input type="number" placeholder="目前市值" class="w-[40%] bg-slate-800 p-2 rounded-lg text-xs cfg-a-val font-bold outline-none" value="${val}">
+                <input type="number" placeholder="目標%" class="w-[20%] bg-slate-800 p-2 rounded-lg text-xs cfg-a-target font-bold outline-none" value="${target}">
+                <button onclick="this.parentElement.remove()" class="text-rose-500 font-bold ml-auto text-lg">✕</button>
             `;
             document.getElementById('cfg-asset-rows').appendChild(div);
         }
 
         function addAccount() { DATA.accounts.push({ name: '新戰略帳號', debt: 0, assets: [] }); DATA.activeIndex = DATA.accounts.length - 1; saveAndRun(); }
-        function deleteAccount() { if (DATA.accounts.length <= 1) return alert('必須保留至少一個帳號'); DATA.accounts.splice(DATA.activeIndex, 1); DATA.activeIndex = 0; saveAndRun(); }
+        function deleteAccount() { if (DATA.accounts.length <= 1) { 
+            DATA.accounts = [{ name: '我的質押帳號', debt: 0, assets: [] }];
+            DATA.activeIndex = 0;
+            saveAndRun();
+        } else {
+            DATA.accounts.splice(DATA.activeIndex, 1); DATA.activeIndex = 0; saveAndRun();
+        } }
+
         function switchAccount(idx) { DATA.activeIndex = parseInt(idx); run(); }
 
         function saveAndRun() {
@@ -161,33 +174,37 @@
 
         function updateSwitcher() {
             const select = document.getElementById('ui-acc-switcher');
-            select.innerHTML = DATA.accounts.map((acc, i) => `<option value="${i}" ${i === DATA.activeIndex ? 'selected' : ''}>${acc.name}</option>`).join('');
+            select.innerHTML = DATA.accounts.map((acc, i) => `<option value="${i}" ${i === DATA.activeIndex ? 'selected' : ''}>${acc.name || '未命名帳號'}</option>`).join('');
         }
 
         function run() {
             const acc = DATA.accounts[DATA.activeIndex];
             const totalAsset = acc.assets.reduce((sum, a) => sum + a.val, 0);
-            const ratio = acc.debt > 0 ? Math.round((totalAsset / acc.debt) * 100) : 9999;
-            const survival = Math.round((1 - (160 / ratio)) * 100);
+            const ratio = (acc.debt > 0 && totalAsset > 0) ? Math.round((totalAsset / acc.debt) * 100) : 0;
+            const survival = ratio > 0 ? Math.round((1 - (160 / ratio)) * 100) : 0;
 
-            document.getElementById('ui-ratio').innerText = (ratio > 2000 ? '>2000' : ratio) + '%';
-            document.getElementById('ui-ratio').style.color = ratio < 180 ? 'var(--m7-red)' : 'var(--m7-green)';
+            document.getElementById('ui-ratio').innerText = (ratio > 2000 ? '>2000' : (ratio === 0 ? '0' : ratio)) + '%';
+            document.getElementById('ui-ratio').style.color = (ratio > 0 && ratio < 180) ? 'var(--m7-red)' : 'var(--m7-emerald)';
             document.getElementById('ui-total-assets').innerText = `NT$ ${Math.round(totalAsset).toLocaleString()}`;
             document.getElementById('ui-survival-bar').style.width = Math.max(0, Math.min(100, survival)) + '%';
 
             const tbody = document.getElementById('ui-asset-table');
-            tbody.innerHTML = acc.assets.map(a => {
-                const diffTWD = (totalAsset * (a.target / 100)) - a.val;
-                return `<tr><td class="py-5 font-bold">${a.code}</td><td class="text-right text-gray-500">${a.target}%</td><td class="text-right font-black ${diffTWD >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${Math.round(diffTWD).toLocaleString()}</td></tr>`;
-            }).join('');
+            if (acc.assets.length > 0) {
+                tbody.innerHTML = acc.assets.map(a => {
+                    const diffTWD = (totalAsset * (a.target / 100)) - a.val;
+                    return `<tr><td class="py-5 font-bold">${a.code}</td><td class="text-right text-gray-500">${a.target}%</td><td class="text-right font-black ${diffTWD >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${Math.round(diffTWD).toLocaleString()}</td></tr>`;
+                }).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" class="py-10 text-center text-gray-500 italic">請點擊右上方 ⚙️ 開始建立配置</td></tr>';
+            }
 
             const stressGrid = document.getElementById('ui-stress-grid');
             const drops = [10, 20, 30, 40, 50, 60];
             stressGrid.innerHTML = drops.map(d => {
-                const sRatio = acc.debt > 0 ? Math.round((totalAsset * (1 - d/100) / acc.debt) * 100) : 9999;
-                return `<div class="bg-white/5 p-4 rounded-2xl text-center border border-white/5">
+                const sRatio = (acc.debt > 0 && totalAsset > 0) ? Math.round((totalAsset * (1 - d/100) / acc.debt) * 100) : 0;
+                return `<div class="bg-white/5 p-4 rounded-2xl text-center border border-white/5 ${sRatio === 0 ? 'opacity-40' : ''}">
                     <p class="text-[9px] text-gray-500 font-bold mb-1">-${d}%</p>
-                    <p class="text-lg font-black ${sRatio < 160 ? 'text-rose-500' : 'text-emerald-400'}">${sRatio}%</p>
+                    <p class="text-lg font-black ${sRatio > 0 && sRatio < 160 ? 'text-rose-500' : 'text-emerald-400'}">${sRatio > 0 ? sRatio + '%' : '--%'}</p>
                 </div>`;
             }).join('');
             updateChart(acc.assets);
@@ -196,16 +213,5 @@
         function updateChart(assets) {
             const ctx = document.getElementById('weightChart').getContext('2d');
             if (myChart) myChart.destroy();
+            if (assets.length === 0) return;
             myChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: assets.map(a => a.code),
-                    datasets: [{ data: assets.map(a => a.val), backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#F43F5E', '#8B5CF6'], borderWidth: 0 }]
-                },
-                options: { plugins: { legend: { display: false } }, cutout: '80%' }
-            });
-        }
-        window.onload = () => { updateSwitcher(); run(); };
-    </script>
-</body>
-</html>
