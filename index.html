@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M7 戰略終端 v10.2 | Than陸仁 監製</title>
+    <title>M7 戰略終端 v10.3 | Than陸仁 監製</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -15,19 +15,27 @@
         #settings-drawer { z-index: 1000; transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
         .yt-link { animation: glow 2s infinite; }
         @keyframes glow { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; color: #10B981; } }
+        /* Logo 旋轉特效：滑過時會有低調的旋轉感 */
+        .logo-glow { transition: transform 0.5s; }
+        .logo-glow:hover { transform: rotate(10deg) scale(1.1); filter: drop-shadow(0 0 8px rgba(16,185,129,0.5)); }
     </style>
 </head>
 <body class="p-4 md:p-8 pb-32">
 
     <div class="max-w-6xl mx-auto space-y-6">
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-white/5">
-            <div>
-                <h1 class="text-3xl font-black italic text-emerald-400 tracking-tighter uppercase">M7 Command Center</h1>
-                <p class="text-[11px] font-bold uppercase tracking-[0.2em] mt-1">
-                    <a href="https://www.youtube.com/@ericZang1985" target="_blank" class="yt-link text-gray-500 hover:text-emerald-400 transition-colors">
-                        Than陸仁 官方頻道 | 戰略共享 ↗
-                    </a>
-                </p>
+            <div class="flex items-center gap-4">
+                <a href="https://www.youtube.com/@ThanLuren" target="_blank">
+                    <img src="logo.png" alt="ThanLuren Logo" class="w-12 h-12 rounded-xl logo-glow bg-white/5 p-1" onerror="this.src='https://ui-avatars.com/api/?name=Than&background=10B981&color=fff'">
+                </a>
+                <div>
+                    <h1 class="text-3xl font-black italic text-emerald-400 tracking-tighter uppercase leading-none">M7 Command Center</h1>
+                    <p class="text-[11px] font-bold uppercase tracking-[0.2em] mt-2">
+                        <a href="https://www.youtube.com/@ericZang1985" target="_blank" class="yt-link text-gray-500 hover:text-emerald-400 transition-colors">
+                            Than陸仁 官方頻道 | 戰略共享 ↗
+                        </a>
+                    </p>
+                </div>
             </div>
             <div class="flex items-center gap-3">
                 <select id="ui-acc-switcher" onchange="switchAccount(this.value)" class="bg-white/5 border border-white/10 p-3 rounded-2xl text-sm font-bold outline-none"></select>
@@ -40,7 +48,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="m7-card p-10 md:col-span-2 text-center relative overflow-hidden">
-                <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">當前帳號維持率</p>
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 italic">Core Maintenance Ratio</p>
                 <div id="ui-ratio" class="text-9xl font-black tracking-tighter text-emerald-400 privacy-mask">--%</div>
                 <div class="w-full mt-10 h-2 bg-white/5 rounded-full overflow-hidden">
                     <div id="ui-survival-bar" class="h-full bg-gradient-to-r from-rose-500 to-emerald-500 transition-all duration-1000" style="width: 0%"></div>
@@ -49,13 +57,15 @@
             <div class="m7-card p-8 flex flex-col items-center justify-center">
                 <canvas id="weightChart" class="max-w-[180px]"></canvas>
                 <div id="ui-total-assets" class="mt-6 text-xl font-black privacy-mask text-emerald-400">NT$ --</div>
-                <p class="text-[10px] text-gray-600 uppercase font-bold tracking-widest">總資產市值</p>
+                <p class="text-[10px] text-gray-600 uppercase font-bold tracking-widest">Total Asset Market Value</p>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="m7-card p-8">
-                <h3 class="text-xs font-bold text-gray-500 mb-6 uppercase tracking-widest italic text-emerald-400">再平衡戰略指令</h3>
+                <h3 class="text-xs font-bold text-gray-400 mb-6 uppercase tracking-widest italic flex items-center gap-2">
+                    <span class="w-1 h-4 bg-emerald-500 rounded-full"></span> 再平衡戰略指令
+                </h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm font-bold">
                         <thead class="text-gray-600 text-[10px] uppercase border-b border-white/5">
@@ -66,16 +76,17 @@
                 </div>
             </div>
             <div class="m7-card p-8">
-                <h3 class="text-xs font-bold text-gray-500 mb-6 uppercase tracking-widest italic text-rose-400">📉 壓力測試：崩盤維持率模擬</h3>
-                <div id="ui-stress-grid" class="grid grid-cols-3 gap-4">
-                    </div>
+                <h3 class="text-xs font-bold text-gray-400 mb-6 uppercase tracking-widest italic flex items-center gap-2">
+                    <span class="w-1 h-4 bg-rose-500 rounded-full"></span> 壓力測試：極端崩盤模擬
+                </h3>
+                <div id="ui-stress-grid" class="grid grid-cols-3 gap-4"></div>
             </div>
         </div>
 
         <footer class="mt-12 text-center py-12 border-t border-white/5">
             <p class="text-[10px] text-gray-600 font-black tracking-[0.4em] uppercase mb-4">ThanLuren M7 Operational System</p>
             <a href="https://www.youtube.com/@ericZang1985" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-white/5 rounded-full border border-white/10 text-xs font-bold text-gray-400 hover:bg-emerald-500/10 hover:text-emerald-400 transition-all">
-                <span class="text-rose-500">●</span> 訂閱 Than陸仁 獲取最新戰略報告 ↗
+                <span class="text-rose-500">●</span> 訂閱 Than陸仁 獲取最新 M7 戰略報告 ↗
             </a>
         </footer>
     </div>
@@ -95,10 +106,10 @@
                 <div><label class="text-[10px] text-gray-500 font-bold block mb-1 uppercase">總負債 (NT$)</label><input type="number" id="cfg-debt" class="bg-slate-800 w-full p-3 rounded-xl text-xl font-black text-rose-400 outline-none border border-white/5"></div>
             </div>
             <div class="space-y-4">
-                <div class="flex justify-between items-center"><label class="text-xs text-gray-500 font-bold uppercase italic">ASSETS LIST</label><button onclick="addAssetRow()" class="text-[10px] px-4 py-2 bg-emerald-500 text-white rounded-full font-black uppercase">+ ADD</button></div>
+                <div class="flex justify-between items-center"><label class="text-xs text-gray-500 font-bold uppercase italic tracking-widest">ASSETS LIST</label><button onclick="addAssetRow()" class="text-[10px] px-4 py-2 bg-emerald-500 text-white rounded-full font-black uppercase">+ ADD</button></div>
                 <div id="cfg-asset-rows" class="space-y-3"></div>
             </div>
-            <button onclick="saveAndRun()" class="w-full py-5 bg-emerald-500 text-white font-black rounded-2xl shadow-xl active:scale-95 transition-all mt-8">同步數據並儲存</button>
+            <button onclick="saveAndRun()" class="w-full py-5 bg-emerald-500 text-white font-black rounded-2xl shadow-xl active:scale-95 transition-all mt-8">更新數據並儲存至瀏覽器</button>
         </div>
     </div>
 
@@ -109,11 +120,7 @@
         };
         let myChart;
 
-        function toggleSettings() { 
-            document.getElementById('settings-drawer').classList.toggle('translate-x-full');
-            loadSettings(); 
-        }
-
+        function toggleSettings() { document.getElementById('settings-drawer').classList.toggle('translate-x-full'); loadSettings(); }
         function loadSettings() {
             const acc = DATA.accounts[DATA.activeIndex];
             document.getElementById('cfg-acc-name').value = acc.name;
@@ -128,30 +135,16 @@
             div.className = "bg-white/5 p-4 rounded-2xl flex flex-wrap gap-2 items-center border border-white/5";
             div.innerHTML = `
                 <input type="text" placeholder="代號" class="w-[30%] bg-slate-800 p-2 rounded-lg text-xs cfg-a-code font-bold outline-none" value="${code}">
-                <input type="number" placeholder="市值" class="w-[40%] bg-slate-800 p-2 rounded-lg text-xs cfg-a-val" value="${val}">
-                <input type="number" placeholder="%" class="w-[20%] bg-slate-800 p-2 rounded-lg text-xs cfg-a-target" value="${target}">
+                <input type="number" placeholder="市值" class="w-[40%] bg-slate-800 p-2 rounded-lg text-xs cfg-a-val font-bold outline-none" value="${val}">
+                <input type="number" placeholder="%" class="w-[20%] bg-slate-800 p-2 rounded-lg text-xs cfg-a-target font-bold outline-none" value="${target}">
                 <button onclick="this.parentElement.remove()" class="text-rose-500 font-bold ml-auto">✕</button>
             `;
             document.getElementById('cfg-asset-rows').appendChild(div);
         }
 
-        function addAccount() {
-            DATA.accounts.push({ name: '新戰略帳號', debt: 0, assets: [] });
-            DATA.activeIndex = DATA.accounts.length - 1;
-            saveAndRun();
-        }
-
-        function deleteAccount() {
-            if (DATA.accounts.length <= 1) return alert('必須保留至少一個帳號');
-            DATA.accounts.splice(DATA.activeIndex, 1);
-            DATA.activeIndex = 0;
-            saveAndRun();
-        }
-
-        function switchAccount(idx) {
-            DATA.activeIndex = parseInt(idx);
-            run();
-        }
+        function addAccount() { DATA.accounts.push({ name: '新戰略帳號', debt: 0, assets: [] }); DATA.activeIndex = DATA.accounts.length - 1; saveAndRun(); }
+        function deleteAccount() { if (DATA.accounts.length <= 1) return alert('必須保留至少一個帳號'); DATA.accounts.splice(DATA.activeIndex, 1); DATA.activeIndex = 0; saveAndRun(); }
+        function switchAccount(idx) { DATA.activeIndex = parseInt(idx); run(); }
 
         function saveAndRun() {
             const acc = DATA.accounts[DATA.activeIndex];
@@ -177,20 +170,17 @@
             const ratio = acc.debt > 0 ? Math.round((totalAsset / acc.debt) * 100) : 9999;
             const survival = Math.round((1 - (160 / ratio)) * 100);
 
-            // Update UI
             document.getElementById('ui-ratio').innerText = (ratio > 2000 ? '>2000' : ratio) + '%';
             document.getElementById('ui-ratio').style.color = ratio < 180 ? 'var(--m7-red)' : 'var(--m7-green)';
             document.getElementById('ui-total-assets').innerText = `NT$ ${Math.round(totalAsset).toLocaleString()}`;
             document.getElementById('ui-survival-bar').style.width = Math.max(0, Math.min(100, survival)) + '%';
 
-            // Update Rebalance Table
             const tbody = document.getElementById('ui-asset-table');
             tbody.innerHTML = acc.assets.map(a => {
                 const diffTWD = (totalAsset * (a.target / 100)) - a.val;
                 return `<tr><td class="py-5 font-bold">${a.code}</td><td class="text-right text-gray-500">${a.target}%</td><td class="text-right font-black ${diffTWD >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${Math.round(diffTWD).toLocaleString()}</td></tr>`;
             }).join('');
 
-            // Update Stress Test Table (RE-ADDED!)
             const stressGrid = document.getElementById('ui-stress-grid');
             const drops = [10, 20, 30, 40, 50, 60];
             stressGrid.innerHTML = drops.map(d => {
@@ -200,7 +190,6 @@
                     <p class="text-lg font-black ${sRatio < 160 ? 'text-rose-500' : 'text-emerald-400'}">${sRatio}%</p>
                 </div>`;
             }).join('');
-
             updateChart(acc.assets);
         }
 
@@ -211,11 +200,7 @@
                 type: 'doughnut',
                 data: {
                     labels: assets.map(a => a.code),
-                    datasets: [{
-                        data: assets.map(a => a.val),
-                        backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#F43F5E', '#8B5CF6'],
-                        borderWidth: 0
-                    }]
+                    datasets: [{ data: assets.map(a => a.val), backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#F43F5E', '#8B5CF6'], borderWidth: 0 }]
                 },
                 options: { plugins: { legend: { display: false } }, cutout: '80%' }
             });
