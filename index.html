@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>M7 戰略終端 v10.5 | Than陸仁 監製</title>
+    <title>M7 戰略終端 v10.6 | Than陸仁 監製</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="manifest" href="manifest.json">
     <style>
         :root { --m7-green: #10B981; --m7-red: #F43F5E; --m7-dark: #0F172A; }
         body { background-color: var(--m7-dark); color: #F1F5F9; font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
@@ -19,7 +21,6 @@
         .logo-glow { transition: transform 0.5s; cursor: pointer; z-index: 100; }
         .logo-glow:hover { transform: rotate(10deg) scale(1.1); filter: drop-shadow(0 0 10px rgba(16,185,129,0.5)); }
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
-        #ui-acc-switcher { z-index: 200; position: relative; }
     </style>
 </head>
 <body class="p-4 md:p-8 pb-32">
@@ -57,7 +58,7 @@
                 </div>
             </div>
             <div class="m7-card p-8 flex flex-col items-center justify-center">
-                <canvas id="weightChart" class="max-w-[180px]"></canvas>
+                <canvas id="weightChart" class="max-[180px]"></canvas>
                 <div id="ui-total-assets" class="mt-6 text-xl font-black privacy-mask text-emerald-400">NT$ 0</div>
                 <p class="text-[10px] text-gray-600 uppercase font-bold tracking-widest">Total Asset Market Value</p>
             </div>
@@ -99,6 +100,14 @@
             <button onclick="toggleSettings()" class="text-3xl hover:text-rose-500 transition-colors px-4">✕</button>
         </div>
         <div class="space-y-8">
+            <div class="bg-emerald-500/5 p-6 rounded-3xl border border-emerald-500/10 space-y-4">
+                <label class="text-[9px] text-emerald-500/60 font-bold block uppercase tracking-widest text-center">戰略代碼同步 (跨裝置遷移)</label>
+                <div class="flex gap-2">
+                    <button onclick="exportConfig()" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-bold text-[10px] uppercase">匯出配置</button>
+                    <button onclick="importConfig()" class="flex-1 py-3 bg-white/5 text-emerald-400 border border-emerald-500/30 rounded-xl font-bold text-[10px] uppercase">匯入配置</button>
+                </div>
+            </div>
+
             <div class="flex gap-2">
                 <button onclick="addAccount()" class="flex-1 py-4 bg-emerald-500/10 text-emerald-400 rounded-2xl font-black text-[10px] uppercase tracking-widest border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">+ NEW ACCOUNT</button>
                 <button onclick="deleteAccount()" class="px-6 py-4 bg-rose-500/10 text-rose-400 rounded-2xl font-black text-[10px] uppercase tracking-widest border border-rose-500/20 hover:bg-rose-500/20 transition-all">DEL</button>
@@ -116,7 +125,6 @@
     </div>
 
     <script>
-        // 🎯 確保初始化絕對不報錯
         let DATA = JSON.parse(localStorage.getItem('than_m7_final')) || {
             activeIndex: 0,
             accounts: [{ name: '我的質押帳號', debt: 0, assets: [] }]
@@ -136,6 +144,33 @@
             const container = document.getElementById('cfg-asset-rows');
             container.innerHTML = '';
             if (acc.assets) acc.assets.forEach(a => addAssetRow(a.code, a.val, a.target));
+        }
+
+        // 🎯 匯出功能
+        function exportConfig() {
+            const configStr = JSON.stringify(DATA);
+            navigator.clipboard.writeText(configStr).then(() => {
+                alert('戰略配置已複製到剪貼簿！請到另一台裝置貼上匯入。');
+            });
+        }
+
+        // 🎯 匯入功能
+        function importConfig() {
+            const input = prompt('請貼上匯出的戰略代碼：');
+            if (input) {
+                try {
+                    const parsed = JSON.parse(input);
+                    if (parsed.accounts) {
+                        DATA = parsed;
+                        localStorage.setItem('than_m7_final', JSON.stringify(DATA));
+                        updateSwitcher();
+                        run();
+                        alert('同步成功！');
+                    }
+                } catch (e) {
+                    alert('無效的代碼，請重新複製。');
+                }
+            }
         }
 
         function addAssetRow(code='', val='', target='') {
@@ -228,5 +263,3 @@
     </script>
 </body>
 </html>
-
-
