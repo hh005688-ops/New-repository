@@ -150,13 +150,13 @@
         function exportConfig() {
             const configStr = JSON.stringify(DATA);
             navigator.clipboard.writeText(configStr).then(() => {
-                alert('戰略配置已複製到剪貼簿！請到另一台裝置貼上匯入。');
+                alert('戰略代碼已複製到剪貼簿！請到另一台裝置貼上匯入。');
             });
         }
 
         // 🎯 匯入功能
         function importConfig() {
-            const input = prompt('請貼上匯出的戰略代碼：');
+            const input = prompt('請直接貼上匯出的戰略代碼：');
             if (input) {
                 try {
                     const parsed = JSON.parse(input);
